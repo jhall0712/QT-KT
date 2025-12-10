@@ -3,19 +3,19 @@
 // ------------------------------------------------------
 #define LED_A D5   // Left Eye
 #define LED_B D6   // Right Eye
-#define LED_C D3   // Flash/Steady LED 1
-#define LED_D D4   // Flash/Steady LED 2
+#define LED_C D3   // Rear LED 1
+#define LED_D D4   // Rear LED 2
 
 // ------------------------------------------------------
 // GROUP 1 – EYE BLINK (PWM + multiple blink types)
 // ------------------------------------------------------
 
 enum BlinkType {
-  BLINK_SLOW,
-  BLINK_DOUBLE,
-  BLINK_TRIPLE,
-  BLINK_TIRED,
-  BLINK_SEQ        // one eye then the other
+  BLINK_SLOW,       // slow mechanical blink (primary)
+  BLINK_DOUBLE,     // two twitch blinks
+  BLINK_TRIPLE,     // three rapid blinks
+  BLINK_TIRED,      // long tired blinks
+  BLINK_SEQ         // one eye then the other
 };
 
 unsigned long blinkNext = 0;
@@ -239,8 +239,8 @@ bool group2_LEDState = false;
 void startGroup2Cycle() {
   unsigned long now = millis();
 
-  unsigned long flashDuration = random(3000, 7000);
-  unsigned long steadyDuration = random(120000, 300000);
+  unsigned long flashDuration = random(3000, 7000); // 3-7 Seconds
+  unsigned long steadyDuration = random(120000, 300000); // 2-5 Minutes
 
   group2_StartTime = now;
   group2_FlashEndTime = now + flashDuration;
