@@ -1,0 +1,300 @@
+// ------------------------------------------------------
+// Pin definitions
+// ------------------------------------------------------
+#define LED_A D5   // Left Eye
+#define LED_B D6   // Right Eye
+#define LED_C D3   // Flash/Steady LED 1
+#define LED_D D4   // Flash/Steady LED 2
+
+// ------------------------------------------------------
+// GROUP 1 – EYE BLINK (PWM + multiple blink types)
+// ------------------------------------------------------
+
+enum BlinkType {
+  BLINK_SLOW,
+  BLINK_DOUBLE,
+  BLINK_TRIPLE,
+  BLINK_TIRED,
+  BLINK_SEQ        // one eye then the other
+};
+
+unsigned long blinkNext = 0;
+unsigned long blinkStart = 0;
+bool blinking = false;
+BlinkType currentBlink;
+
+// weights
+int weightSlow   = 70;
+int weightDouble = 10;
+int weightTriple = 10;
+int weightTired  = 8;
+int weightSeq    = 5;
+
+// smooth fade (0–255)
+void setEyes(int levelA, int levelB) {
+  analogWrite(LED_A, levelA);
+  analogWrite(LED_B, levelB);
+}
+
+void setEyes(int level) {
+  setEyes(level, level);
+}
+
+BlinkType chooseBlink() {
+  int total = weightSlow + weightDouble + weightTriple + weightTired + weightSeq;
+  int r = random(0, total);
+
+  if (r < weightSlow) return BLINK_SLOW;
+  r -= weightSlow;
+
+  if (r < weightDouble) return BLINK_DOUBLE;
+  r -= weightDouble;
+
+  if (r < weightTriple) return BLINK_TRIPLE;
+  r -= weightTriple;
+
+  if (r < weightTired) return BLINK_TIRED;
+  r -= weightTired;
+
+  return BLINK_SEQ;
+}
+
+void fadeEye(int pin, int from, int to, int duration) {
+  int steps = 30;
+  for (int i = 0; i < steps; i++) {
+    float t = float(i) / steps;
+    int val = from + (to - from) * t;
+    analogWrite(pin, val);
+    delay(duration / steps);
+  }
+}
+
+void fadeEyes(int from, int to, int duration) {
+  int steps = 30;
+  for (int i = 0; i < steps; i++) {
+    float t = float(i) / steps;
+    int val = from + (to - from) * t;
+    setEyes(val);
+    delay(duration / steps);
+  }
+}
+
+void startBlink() {
+  blinking = true;
+  blinkStart = millis();
+  currentBlink = chooseBlink();
+}
+
+void performBlink(BlinkType type) {
+  switch (type) {
+
+    case BLINK_SLOW:
+      fadeEyes(255, 0, 150);
+      fadeEyes(0, 255, 150);
+      break;
+
+    case BLINK_DOUBLE:
+      for (int i = 0; i < 2; i++) {
+        fadeEyes(255, 0, 80);
+        fadeEyes(0, 255, 80);
+        delay(50);
+      }
+      break;
+
+    case BLINK_TRIPLE:
+      for (int i = 0; i < 3; i++) {
+        fadeEyes(255, 0, 60);
+        fadeEyes(0, 255, 60);
+        delay(40);
+      }
+      break;
+
+    case BLINK_TIRED:
+      fadeEyes(255, 0, 400);
+      delay(250);
+      fadeEyes(0, 255, 350);
+      break;
+
+    case BLINK_SEQ: {
+      fadeEye(LED_A, 255, 0, 120);
+      fadeEye(LED_A, 0, 255, 120);
+      delay(80);
+
+      fadeEye(LED_B, 255, 0, 120);
+      fadeEye(LED_B, 0, 255, 120);
+      break;
+    }
+  }
+}
+
+void updateEyes() {
+  unsigned long now = millis();
+
+  if (!blinking && now > blinkNext) {
+    startBlink();
+    performBlink(currentBlink);
+    blinking = false;
+    blinkNext = now + random(2000, 9000); // 2–9 sec
+  }
+}
+
+// ------------------------------------------------------
+// PERSONALITY ADDITIONS
+// ------------------------------------------------------
+
+// ---- Micro-movements ----
+unsigned long microMoveNext = 0;
+
+void updateMicroMovements() {
+  unsigned long now = millis();
+  if (now < microMoveNext) return;
+
+  int drift = random(-10, 11);
+  int current = analogRead(LED_A);
+  int target = constrain(current + drift, 180, 255);
+
+  fadeEyes(current, target, 120);
+  microMoveNext = now + random(3000, 8000); // every 3–8 sec
+}
+
+// ---- Curious glance ----
+enum MoodType { MOOD_NONE, MOOD_CURIOUS };
+MoodType moodState = MOOD_NONE;
+unsigned long moodEnd = 0;
+
+void updateMood() {
+  if (moodState == MOOD_CURIOUS) {
+    analogWrite(LED_A, 255);
+    analogWrite(LED_B, 200);
+
+    if (millis() > moodEnd) {
+      moodState = MOOD_NONE;
+      setEyes(255);
+    }
+  }
+}
+
+void randomMoodTrigger() {
+  if (moodState == MOOD_NONE && random(0, 10000) == 0) {
+    moodState = MOOD_CURIOUS;
+    moodEnd = millis() + 1500;
+  }
+}
+
+// ---- Sleepy droop ----
+void sleepyDroop() {
+  fadeEyes(255, 180, 1500);
+  delay(800);
+  fadeEyes(180, 255, 1000);
+}
+
+// ---- Startle flash ----
+void startleFlash() {
+  fadeEyes(255, 0, 40);
+  fadeEyes(0, 255, 120);
+  delay(40);
+  fadeEyes(255, 180, 200);
+  fadeEyes(180, 255, 200);
+}
+
+// ---- Side-eye ----
+void sideEye() {
+  fadeEyes(255, 180, 300);
+  analogWrite(LED_A, 160);
+  analogWrite(LED_B, 255);
+  delay(700);
+  fadeEyes(180, 255, 300);
+}
+
+// ---- Half-blink ----
+void halfBlink() {
+  fadeEyes(255, 80, 180);
+  delay(90);
+  fadeEyes(80, 255, 180);
+}
+
+// ---- Random personality triggers ----
+void updatePersonality() {
+
+  if (random(0, 6000) == 0) halfBlink();
+  if (random(0, 8000) == 0) sleepyDroop();
+  if (random(0, 15000) == 0) startleFlash();
+  if (random(0, 12000) == 0) sideEye();
+
+  randomMoodTrigger();
+}
+
+// ------------------------------------------------------
+// GROUP 2 – FLASH / STEADY LEDs
+// ------------------------------------------------------
+
+unsigned long group2_StartTime = 0;
+unsigned long group2_FlashEndTime = 0;
+unsigned long group2_SteadyEndTime = 0;
+
+unsigned long group2_FlashInterval = 100;
+bool group2_InFlashMode = true;
+bool group2_LEDState = false;
+
+void startGroup2Cycle() {
+  unsigned long now = millis();
+
+  unsigned long flashDuration = random(3000, 7000);
+  unsigned long steadyDuration = random(120000, 300000);
+
+  group2_StartTime = now;
+  group2_FlashEndTime = now + flashDuration;
+  group2_SteadyEndTime = group2_FlashEndTime + steadyDuration;
+  group2_InFlashMode = true;
+}
+
+void updateGroup2() {
+  unsigned long now = millis();
+
+  if (group2_InFlashMode) {
+    if (now - group2_StartTime >= group2_FlashInterval) {
+      group2_StartTime = now;
+      group2_LEDState = !group2_LEDState;
+
+      digitalWrite(LED_C, group2_LEDState);
+      digitalWrite(LED_D, group2_LEDState);
+    }
+
+    if (now >= group2_FlashEndTime) {
+      group2_InFlashMode = false;
+      digitalWrite(LED_C, HIGH);
+      digitalWrite(LED_D, HIGH);
+    }
+  }
+  else {
+    if (now >= group2_SteadyEndTime) {
+      startGroup2Cycle();
+    }
+  }
+}
+
+// ------------------------------------------------------
+// SETUP
+// ------------------------------------------------------
+void setup() {
+  pinMode(LED_A, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+  pinMode(LED_C, OUTPUT);
+  pinMode(LED_D, OUTPUT);
+
+  setEyes(255); 
+  randomSeed(analogRead(0));
+
+  startGroup2Cycle();
+}
+
+// ------------------------------------------------------
+// LOOP
+// ------------------------------------------------------
+void loop() {
+  updateEyes();
+  updateMicroMovements();
+  updateMood();
+  updatePersonality();
+  updateGroup2();
+}
