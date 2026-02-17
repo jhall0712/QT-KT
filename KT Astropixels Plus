@@ -245,24 +245,26 @@ LogicEngineDeathStarFLD<PIN_FRONT_LOGIC> FLD(FLD_PinkNormal, 1);
 AstroPixelFLD<PIN_FRONT_LOGIC> FLD(FLD_PinkNormal, 1);
 #endif
 
-// --- Custom PSI: color wipe between two colors (aiming for Pink ↔ Purple) ---
-static LogicEngineSettings FrontPSI_Custom(
+// --- Front PSI: Pink ↔ Blue wipe ---
+static LogicEngineSettings FrontPSI_Settings(
     LogicEngineDefaults::FRONT_FADE,
-    220,                                // HUE shift
+    LogicEngineDefaults::FRONT_HUE,
     LogicEngineDefaults::FRONT_DELAY,
-    LogicEngineDefaults::FRONT_PSI_PAL,  // PSI palette (this exists)
+    LogicEngineDefaults::FRONT_PSI_PAL,
     LogicEngineDefaults::FRONT_BRI,
     LogicEngineDefaults::sequence(
         LogicEngineDefaults::PSICOLORWIPE,
-        LogicEngineDefaults::kPurple     // base pair: Purple ↔ Magenta
+        LogicEngineDefaults::kPink
     )
 );
 
-static LogicEngineSettings RearPSI_Custom(
+// --- Rear PSI: Purple ↔ Orange wipe ---
+// We must base this on kPurple and rotate hue into orange space.
+static LogicEngineSettings RearPSI_Settings(
     LogicEngineDefaults::REAR_FADE,
-    220,                                // HUE shift
+    24,   // <-- this hue rotation produces a clean orange on most builds
     LogicEngineDefaults::REAR_DELAY,
-    LogicEngineDefaults::REAR_PSI_PAL,   // (if this doesn't exist, use FRONT_PSI_PAL here too)
+    LogicEngineDefaults::FRONT_PSI_PAL,
     LogicEngineDefaults::REAR_BRI,
     LogicEngineDefaults::sequence(
         LogicEngineDefaults::PSICOLORWIPE,
@@ -271,8 +273,10 @@ static LogicEngineSettings RearPSI_Custom(
 );
 
 
-AstroPixelFrontPSI<PIN_FRONT_PSI> frontPSI(FrontPSI_Custom, 4);
-AstroPixelRearPSI<PIN_REAR_PSI> rearPSI(RearPSI_Custom, 5);
+
+AstroPixelFrontPSI<PIN_FRONT_PSI> frontPSI(FrontPSI_Settings, 4);
+AstroPixelRearPSI<PIN_REAR_PSI> rearPSI(RearPSI_Settings, 5);
+
 
 
 #if USE_HOLO_TEMPLATE
@@ -463,6 +467,9 @@ void resetSequence()
 
 ////////////////////////////////
 
+
+
+
 int32_t strtol(const char *cmd, const char **endptr)
 {
     bool sign = false;
@@ -637,6 +644,8 @@ void scan_i2c()
 
 ////////////////////////////////
 
+
+
 void setup()
 {
     REELTWO_READY();
@@ -668,6 +677,9 @@ void setup()
 #endif
     // scan_i2c();
     SetupEvent::ready();
+
+
+
 
     // dataPanel.setSequence(DataPanel::kDisabled);
     // chargeBayIndicator.setSequence(ChargeBayIndicator::kDisabled);
@@ -1166,6 +1178,8 @@ void mainLoop()
 
 ////////////////
 
+
+
 #ifdef USE_WIFI
 void eventLoopTask(void *)
 {
@@ -1199,4 +1213,6 @@ void eventLoopTask(void *)
 void loop()
 {
     mainLoop();
+
 }
+
