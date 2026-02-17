@@ -258,11 +258,11 @@ static LogicEngineSettings FrontPSI_Settings(
     )
 );
 
-// --- Rear PSI: Purple ↔ Pink Wipe ---
+// --- Rear PSI: Purple ↔ Orange wipe ---
 // We must base this on kPurple and rotate hue into orange space.
 static LogicEngineSettings RearPSI_Settings(
     LogicEngineDefaults::REAR_FADE,
-    24,   // <-- this changes hue
+    24,   // <-- this hue rotation produces a clean orange on most builds
     LogicEngineDefaults::REAR_DELAY,
     LogicEngineDefaults::FRONT_PSI_PAL,
     LogicEngineDefaults::REAR_BRI,
@@ -707,8 +707,12 @@ void setup()
         sMarcSound.setVolume(preferences.getInt(PREFERENCE_MARCSOUND_VOLUME, MARC_SOUND_VOLUME) / 1000.0);
     }
 
-    RLD.selectScrollTextLeft("... QT-KT 43 ....", LogicEngineRenderer::kPink, 0, 15);
-    FLD.selectScrollTextLeft("... QT-KT 43 ...", LogicEngineRenderer::kPink, 0, 15);
+FLD.selectScrollTextLeft("HELLO I AM QT-KT 43", LogicEngineRenderer::kPink, 0, 12);
+
+RLD.selectScrollTextLeft("QT-KT 43 A CUTIE WITH A MISSION", LogicEngineRenderer::kPink, 0, 20);
+
+
+
 
     // Assign servos to holo projectors
     frontHolo.assignServos(&servoDispatch, 13, 14);
@@ -1215,4 +1219,3 @@ void loop()
     mainLoop();
 
 }
-
