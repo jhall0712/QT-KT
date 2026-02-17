@@ -258,11 +258,11 @@ static LogicEngineSettings FrontPSI_Settings(
     )
 );
 
-// --- Rear PSI: Purple ↔ Orange wipe ---
+// --- Rear PSI: Purple ↔ Pink Wipe ---
 // We must base this on kPurple and rotate hue into orange space.
 static LogicEngineSettings RearPSI_Settings(
     LogicEngineDefaults::REAR_FADE,
-    24,   // <-- this hue rotation produces a clean orange on most builds
+    24,   // <-- this changes hue
     LogicEngineDefaults::REAR_DELAY,
     LogicEngineDefaults::FRONT_PSI_PAL,
     LogicEngineDefaults::REAR_BRI,
