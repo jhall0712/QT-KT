@@ -1,3 +1,26 @@
+# Maestro Channels
+
+## Body
+
+Channel 0 - Upper Arm  
+Channel 1 - Lower Arm  
+
+## Dome
+
+Channel 0 - Pie 1  
+Channel 1 - Pie 2  
+Channel 2 - Pie 4  
+Channel 3 - Pie 5  
+Channel 4 - Pie 6  
+Channel 5 - Panel 1  
+Channel 6 - Panel 2  
+Channel 7 - Panel 3  
+Channel 8 - Panel 4  
+Channel 9 - Panel 7  
+Channel 10 - Panel 10  
+Channel 11 - Panel 11  
+
+
 # Maestro Sequences
 
 ## Body
@@ -18,3 +41,4 @@ Sequence 04 - All Panels Open
 Sequence 05 - All Panels Close  
 Sequence 06 - Wiggle  
 Sequence 07 - Short Circuit  
+
