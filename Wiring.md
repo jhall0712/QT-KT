@@ -9,23 +9,23 @@
 06 - Right Leg RC Ground  
 07 - Left Left RC Signal  
 08 - Left Leg RC Ground  
-09 -   
-10 -   
-11 -   
-12 -  
-13 -   
+09 - Not Currently Used   
+10 - Not Currently Used  
+11 - Not Currently Used   
+12 - Not Currently Used  
+13 - Not Currently Used   
 14 - 5V- to Utility Arm MCU  
 15 - 5V+ to Utility Arm MCU  
 
 ## Slip Ring
-01 -  
-02 -   
-03 -  
-04 -   
-05 -  
-06 -   
-07 -   
-08 -  
+01 - 20V+
+02 - 20V-
+03 - Not Currently Used  
+04 - Not Currently Used  
+05 - Not Currently Used   
+06 - Not Currently Used   
+07 - Not Currently Used    
+08 - Not Currently Used 
 
 ## HP Nano
 01 -  
