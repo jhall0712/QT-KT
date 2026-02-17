@@ -25,5 +25,17 @@ Pin 25 (Serial 1) - Dome Maestro RX
 Gnd Pin - From Dome 5V Converter Ground  
 V+ Pin - From Dome 5V Converter +  
 RX Pin - From Dome Slave Pin 25  
+Channel 0 - Pie 1  
+Channel 1 - Pie 2  
+Channel 2 - Pie 4  
+Channel 3 - Pie 5  
+Channel 4 - Pie 6  
+Channel 5 - Panel 1  
+Channel 6 - Panel 2  
+Channel 7 - Panel 3  
+Channel 8 - Panel 4  
+Channel 9 - Panel 7  
+Channel 10 - Panel 10  
+Channel 11 - Panel 11  
 
 
